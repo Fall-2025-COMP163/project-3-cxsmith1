@@ -1,73 +1,55 @@
-# custom_exceptions.py
-# Minimal set of exceptions expected by the tests
+# Custom exceptions for Project 3
 
-class GameError(Exception):
+class InvalidCharacterClassError(Exception):
     pass
 
-# Data
-class DataError(GameError):
+class CharacterNotFoundError(Exception):
     pass
 
-class MissingDataFileError(DataError):
+class SaveFileCorruptedError(Exception):
     pass
 
-class InvalidDataFormatError(DataError):
+class InvalidSaveDataError(Exception):
     pass
 
-# Character
-class CharacterError(GameError):
+class CharacterDeadError(Exception):
     pass
 
-class InvalidCharacterClassError(CharacterError):
+class InventoryFullError(Exception):
     pass
 
-class CharacterNotFoundError(CharacterError):
+class ItemNotFoundError(Exception):
     pass
 
-class CharacterDeadError(CharacterError):
+class InsufficientResourcesError(Exception):
     pass
 
-class InsufficientLevelError(CharacterError):
+class InvalidItemTypeError(Exception):
     pass
 
-# Inventory
-class InventoryError(GameError):
+class QuestNotFoundError(Exception):
     pass
 
-class InventoryFullError(InventoryError):
+class InsufficientLevelError(Exception):
     pass
 
-class ItemNotFoundError(InventoryError):
+class QuestRequirementsNotMetError(Exception):
     pass
 
-class InsufficientResourcesError(InventoryError):
+class QuestAlreadyCompletedError(Exception):
     pass
 
-class InvalidItemTypeError(InventoryError):
+class QuestNotActiveError(Exception):
     pass
 
-# Quest
-class QuestError(GameError):
+class MissingDataFileError(Exception):
     pass
 
-class QuestNotFoundError(QuestError):
+class InvalidDataFormatError(Exception):
     pass
 
-class QuestRequirementsNotMetError(QuestError):
+class InvalidTargetError(Exception):
     pass
 
-class QuestAlreadyCompletedError(QuestError):
-    pass
-
-class QuestNotActiveError(QuestError):
-    pass
-
-# Combat
-class CombatError(GameError):
-    pass
-
-class InvalidTargetError(CombatError):
-    pass
-
-class CombatNotActiveError(CombatError):
+class CombatNotActiveError(Exception):
     pass
