@@ -149,3 +149,6 @@ Test files are provided for your learning but are protected. Modifying test file
 - Academic integrity investigation
 
 You can view tests to understand requirements, but any modifications will be automatically detected.
+
+
+Not gonna lie, used a LOT of AI on this one, couldn't really pass any of the test cases on GitHub, feeling pretty slow right now, it's okay though I guess. Used for formatting/opening files, as well as saving/directories. Everything else was pretty much from old assignments/ projects that were done in the course.
