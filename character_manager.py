@@ -1,54 +1,64 @@
-# combat_system.py
-import random
-from custom_exceptions import InvalidTargetError, CombatNotActiveError
+# character_manager.py
+import os
+import json
+from custom_exceptions import (
+    InvalidCharacterClassError, CharacterNotFoundError, CharacterDeadError
+)
 
-def create_enemy(template):
+SAVE_DIR = os.path.join(os.path.dirname(__file__), "data", "save_games")
+os.makedirs(SAVE_DIR, exist_ok=True)
+
+# base stats used to create characters
+_CLASS_BASE = {
+    "Warrior": {"health": 120, "strength": 15, "magic": 5},
+    "Mage":    {"health": 80,  "strength": 8,  "magic": 20},
+    "Rogue":   {"health": 90,  "strength": 12, "magic": 10},
+    "Cleric":  {"health": 100, "strength": 9,  "magic": 14}
+}
+
+def create_character(name, character_class):
     """
-    template: dict with 'name' and 'health' keys OR a string name handled simply.
-    Returns an enemy dict or raises InvalidTargetError if template invalid.
+    Return a character as a plain dict. Raises InvalidCharacterClassError
+    if the class name is not one of the allowed keys.
     """
-    if isinstance(template, dict):
-        if "name" not in template or "health" not in template:
-            raise InvalidTargetError("Invalid enemy template")
-        return dict(template)  # shallow copy
-    if isinstance(template, str):
-        # small builtin templates
-        name = template.lower()
-        if name == "goblin":
-            return {"name": "goblin", "health": 30, "strength": 6, "xp": 10, "gold": 5}
-        if name == "orc":
-            return {"name": "orc", "health": 60, "strength": 12, "xp": 25, "gold": 15}
-        raise InvalidTargetError("Unknown enemy")
-    raise InvalidTargetError("Invalid enemy")
+    if character_class not in _CLASS_BASE:
+        raise InvalidCharacterClassError(f"Invalid class: {character_class}")
+    base = _CLASS_BASE[character_class]
+    char = {
+        "name": name,
+        "class": character_class,
+        "level": 1,
+        "health": base["health"],
+        "max_health": base["health"],
+        "strength": base["strength"],
+        "magic": base["magic"],
+        "gold": 0,
+        "xp": 0,
+        "inventory": [],
+        "equipped": {"weapon": None, "armor": None},
+        "active_quests": [],
+        "completed_quests": []
+    }
+    return char
 
-class SimpleBattle:
-    def __init__(self, player, enemy):
-        # expect player and enemy to be dict-like
-        self.player = player
-        self.enemy = enemy
-        self.combat_active = True
+def save_character(char, filename):
+    """Save the character dict to data/save_games/filename"""
+    path = os.path.join(SAVE_DIR, filename)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(char, f, indent=2)
+    return path
 
-    def attack(self):
-        """
-        One step of attack: player hits enemy then enemy hits player.
-        Raises CombatNotActiveError if combat_active is False.
-        """
-        if not self.combat_active:
-            raise CombatNotActiveError("Combat not active")
-        # player attack: use player['strength'] if dict-like, else attribute
-        atk = self.player.get("strength", 0) if isinstance(self.player, dict) else getattr(self.player, "strength", 0)
-        # small crit
-        if random.random() < 0.1:
-            atk = int(atk * 1.5)
-        self.enemy["health"] = max(0, self.enemy.get("health", 0) - atk)
-        # enemy retaliates if alive
-        if self.enemy.get("health", 0) > 0:
-            edmg = self.enemy.get("strength", 0)
-            if random.random() < 0.05:
-                edmg = int(edmg * 1.5)
-            self.player["health"] = max(0, self.player.get("health", 0) - edmg)
-        # return snapshot
-        return {
-            "player_hp": self.player.get("health", 0),
-            "enemy_hp": self.enemy.get("health", 0)
-        }
+def load_character(filename):
+    """Load character from data/save_games/filename. Raises CharacterNotFoundError if missing."""
+    path = os.path.join(SAVE_DIR, filename)
+    if not os.path.exists(path):
+        raise CharacterNotFoundError(f"No save file at {path}")
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    return data
+
+def ensure_alive(char):
+    """Helper used by tests: raises CharacterDeadError if health <= 0"""
+    if char.get("health", 0) <= 0:
+        raise CharacterDeadError("Character is dead")
+    return True
