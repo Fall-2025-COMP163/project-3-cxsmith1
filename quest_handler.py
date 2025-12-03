@@ -1,6 +1,6 @@
 from custom_exceptions import QuestNotFoundError, InsufficientLevelError, QuestRequirementsNotMetError, QuestAlreadyCompletedError, QuestNotActiveError
 
-def start_quest(character, quest_id, quests): 
+def start_quest(character, quest_id, quests):
     if quest_id not in quests:
         raise QuestNotFoundError()
     quest = quests[quest_id]
